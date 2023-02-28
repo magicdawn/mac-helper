@@ -2,7 +2,8 @@
   "name": "mac-helper",
   "version": "0.0.1",
   "description": "useful helper for macOS",
-  "main": "index.js",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "scripts": {
     "test": "mocha",
     "prepare": "husky install",
