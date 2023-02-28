@@ -28,7 +28,7 @@ export async function getPathFinderSelect() {
 export async function getPathFinderSelects() {
   const filePaths: string[] = await jxaRun(() => {
     const app = Application('Path Finder')
-    return app.selection()?.map((x: any) => x?.posixPath())
+    return (app.selection() || []).map((x: any) => x?.posixPath())
   })
   return filePaths
 }
