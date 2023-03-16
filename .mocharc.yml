@@ -1,4 +1,8 @@
-require: [should]
+extension: [ts]
+require:
+  - ts-node/register
+  - should
+
 reporter: spec
 timeout: 5000
 recursive: true

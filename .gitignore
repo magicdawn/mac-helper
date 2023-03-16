@@ -12,3 +12,5 @@ coverage.*
 # ts
 **/*.tsbuildinfo
 /lib
+
+.vscode
