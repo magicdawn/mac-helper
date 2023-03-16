@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## v0.0.3 2023-03-16
+
+- chore: use jxa-common-used for better typing
+
 ## v0.0.2 2023-03-01
 
 - fix publish issue
