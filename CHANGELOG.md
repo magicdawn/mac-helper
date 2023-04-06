@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## v0.1.0 2023-04-06
+
+- feat: iTerm reuse Tab when idle
+
 ## v0.0.4 2023-03-17
 
 - chore: add some test
