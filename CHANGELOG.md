@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## v0.1.1 2023-04-27
+
+- feat: add `Chrome.getActiveTab`
+
 ## v0.1.0 2023-04-06
 
 - feat: iTerm reuse Tab when idle
