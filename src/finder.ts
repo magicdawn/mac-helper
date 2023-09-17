@@ -38,6 +38,5 @@ export const Finder = {
 }
 
 // ;(async () => {
-//   console.log(await getPathFinderSelect())
-//   console.log(await getPathFinderSelects())
+//   console.log(await PathFinder.allSelected())
 // })()
