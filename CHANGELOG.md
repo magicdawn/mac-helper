@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## v0.1.3 2024-04-27
+
+- feat: add QSpace finder App
+- chore: update deps
+
 ## v0.1.2 2023-09-18
 
 - dev: migrate mocha to vitest
