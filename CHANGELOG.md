@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## v0.1.4 2024-05-23
+
+- feat: add `isAppRunning` via `ps -ax -o command`
+
 ## v0.1.3 2024-04-27
 
 - feat: add QSpace finder App
