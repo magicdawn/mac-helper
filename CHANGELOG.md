@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## v0.1.5 2024-05-23
+
+- feat: `PathFinder` etc selected will try to detect wether app is running first
+
 ## v0.1.4 2024-05-23
 
 - feat: add `isAppRunning` via `ps -ax -o command`

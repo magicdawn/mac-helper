@@ -1,6 +1,7 @@
 import { run as jxaRun } from '@jxa/run'
 import { type PathFinder as PathFinderType } from 'jxa-common-used'
 import { fileURLToPath } from 'url'
+import { isAppRunning } from './app'
 
 /**
  * `App` named epxorts
@@ -35,6 +36,9 @@ export const QSpace = {
  */
 
 export async function getPathFinderSelected() {
+  if (!(await isAppRunning('Path Finder'))) {
+    return []
+  }
   const filePaths: string[] = await jxaRun(() => {
     const app = Application<PathFinderType>('Path Finder')
     return (app.selection() || []).map((x) => x.posixPath())
@@ -66,6 +70,9 @@ export type QSpaceFileItem = {
 }
 
 export async function getQSpaceSelected() {
+  if (!(await isAppRunning('QSpace Pro'))) {
+    return []
+  }
   const urls: string[] = await jxaRun(() => {
     const app = Application('QSpace Pro')
     const selection = (app.selectedItems() || []).map((x: QSpaceFileItem) => x.urlstr())
