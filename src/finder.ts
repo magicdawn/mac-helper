@@ -13,6 +13,9 @@ export const PathFinder = {
   async singleSelected(): Promise<string | undefined> {
     return (await getPathFinderSelected())[0]
   },
+  async setSelected(filePaths: string[]) {
+    await setPathFinderSelected(filePaths)
+  },
 }
 export const Finder = {
   async allSelected() {
@@ -20,6 +23,9 @@ export const Finder = {
   },
   async singleSelected(): Promise<string | undefined> {
     return (await getFinderSelected())[0]
+  },
+  async setSelected(filePaths: string[]) {
+    await setFinderSelected(filePaths)
   },
 }
 export const QSpace = {
@@ -46,6 +52,13 @@ export async function getPathFinderSelected() {
   return filePaths
 }
 
+export async function setPathFinderSelected(filePaths: string[]) {
+  await jxaRun((filePaths: string[]) => {
+    const app = Application<PathFinderType>('Path Finder')
+    app.select(filePaths)
+  }, filePaths)
+}
+
 export async function getFinderSelected() {
   const urls: string[] = await jxaRun(() => {
     const app = Application('Finder')
@@ -53,6 +66,14 @@ export async function getFinderSelected() {
     return (selection || []).map((x) => x.url())
   })
   return urls.map((u) => fileURLToPath(u))
+}
+
+export async function setFinderSelected(filePaths: string[]) {
+  await jxaRun((filePaths: string[]) => {
+    const app = Application('Finder')
+    app.select(filePaths.map((f) => Path(f)))
+    app.activate()
+  }, filePaths)
 }
 
 // file item n [inh. item] : A file item.

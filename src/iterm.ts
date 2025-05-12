@@ -13,7 +13,7 @@ export async function runInIterm(command: string, reuse = true) {
       // reuse when possible
       if (reuse) {
         const session: iTerm2.Session = app.currentWindow().currentSession()
-        const isIdle = session.isAtShellPrompt()
+        const isIdle = session?.isAtShellPrompt()
         if (isIdle) {
           usingSession = session
         }
@@ -32,7 +32,7 @@ export async function runInIterm(command: string, reuse = true) {
       app.write(usingSession, { text: command })
     },
     command,
-    reuse
+    reuse,
   )
 }
 

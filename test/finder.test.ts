@@ -27,10 +27,7 @@ describe('Finder', () => {
     it('PathFinder multiple works', async () => {
       const dir = path.join(__dirname, '..') + '/'
       const files = [dir + 'package.json', dir + 'tsconfig.json']
-      await run((files) => {
-        const app = Application<PathFinderType>('Path Finder')
-        app.select(files)
-      }, files)
+      await PathFinder.setSelected(files)
 
       await delay(200)
 
@@ -42,15 +39,10 @@ describe('Finder', () => {
 
   // Finder 作妖, 必须切换到 finder, 下面获取的路径才对
   // 需要测试再打开
-  describe.skip('Finder', async () => {
+  describe('Finder', async () => {
     it('Finder works', async () => {
       {
-        await run((__filename) => {
-          const app = Application('Finder')
-          app.select(Path(__filename)) // finder 必须使用 Path() 包裹
-          app.activate()
-        }, __filename)
-
+        await Finder.setSelected([__filename])
         await delay(200)
 
         const selected = await Finder.singleSelected()
@@ -61,15 +53,10 @@ describe('Finder', () => {
       {
         const dir = path.join(__dirname, '..') + '/'
         const files = [dir + 'package.json', dir + 'tsconfig.json']
-        await run((files) => {
-          const app = Application('Finder')
-          app.select(files.map((f) => Path(f)))
-          app.activate()
-        }, files)
-
+        await Finder.setSelected(files)
         await delay(200)
 
-        const selected = await PathFinder.allSelected()
+        const selected = await Finder.allSelected()
         selected.length.should.above(0)
         selected.should.deepEqual(files)
       }
