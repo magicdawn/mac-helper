@@ -1,5 +1,8 @@
 name: SyncTagToRelease
 
+permissions:
+  contents: write
+
 on:
   push:
     tags:
