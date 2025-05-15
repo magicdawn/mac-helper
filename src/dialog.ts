@@ -8,14 +8,19 @@ export const dialog = {
 }
 
 async function prompt(label: string, defaultValue = ''): Promise<string> {
-  return (
-    (await run((label) => {
-      const app = Application.currentApplication()
-      app.includeStandardAdditions = true
-      const response = app.displayDialog(label, { defaultAnswer: '' })
-      return response.textReturned
-    }, label)) || defaultValue
-  )
+  // if cancel dialog, will throw error
+  try {
+    return (
+      (await run((label) => {
+        const app = Application.currentApplication()
+        app.includeStandardAdditions = true
+        const response = app.displayDialog(label, { defaultAnswer: '' })
+        return response.textReturned
+      }, label)) || defaultValue
+    )
+  } catch {
+    return defaultValue
+  }
 }
 
 type AppMethod = 'chooseFromList'
