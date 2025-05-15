@@ -14,6 +14,7 @@
     "test:dev": "vitest --globals --testTimeout=30000",
     "test-cover": "vitest run --globals --coverage --testTimeout=30000",
     "dev": "tsc -w --incremental",
+    "typecheck": "tsc --noEmit",
     "build": "rm -rf lib; rm tsconfig.tsbuildinfo; tsc",
     "prepublishOnly": "pnpm test && pnpm build"
   },

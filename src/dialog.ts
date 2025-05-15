@@ -1,5 +1,22 @@
 import { run } from '@jxa/run'
-import { StandardAdditions } from '@jxa/types'
+import type { StandardAdditions } from '@jxa/types'
+
+export const dialog = {
+  prompt,
+  chooseFromList,
+  chooseMultipleFromList,
+}
+
+async function prompt(label: string, defaultValue = ''): Promise<string> {
+  return (
+    (await run((label) => {
+      const app = Application.currentApplication()
+      app.includeStandardAdditions = true
+      const response = app.displayDialog(label, { defaultAnswer: '' })
+      return response.textReturned
+    }, label)) || defaultValue
+  )
+}
 
 type AppMethod = 'chooseFromList'
 
@@ -12,7 +29,7 @@ async function runOnCurrentApp(method: AppMethod, ...args: any[]) {
       return app[method]?.(...args)
     },
     method,
-    ...args
+    ...args,
   )
 }
 
@@ -20,7 +37,7 @@ type ChooseOption = { label: string; value: string }
 
 async function chooseFromList(
   list: string[] | ChooseOption[],
-  options: StandardAdditions.StandardAdditions.ChooseFromListOptionalParameter = {}
+  options: StandardAdditions.StandardAdditions.ChooseFromListOptionalParameter = {},
 ): Promise<string | undefined> {
   let usingOption = false
   let showList: string[] = []
@@ -49,7 +66,7 @@ async function chooseFromList(
 
 async function chooseMultipleFromList(
   list: string[] | ChooseOption[],
-  options: StandardAdditions.StandardAdditions.ChooseFromListOptionalParameter = {}
+  options: StandardAdditions.StandardAdditions.ChooseFromListOptionalParameter = {},
 ): Promise<string[]> {
   let usingOption = false
   let showList: string[] = []
@@ -71,15 +88,10 @@ async function chooseMultipleFromList(
     return selected as string[]
   } else {
     const valArr = (selected as string[]).map(
-      (label) => (list as ChooseOption[]).find((item) => item.label === label)!.value
+      (label) => (list as ChooseOption[]).find((item) => item.label === label)!.value,
     )
     return valArr
   }
-}
-
-export const dialog = {
-  chooseFromList,
-  chooseMultipleFromList,
 }
 
 // dialog.chooseFromList(['hello', 'world']).then((selected) => {

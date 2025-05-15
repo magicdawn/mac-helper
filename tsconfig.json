@@ -7,14 +7,11 @@
     "esModuleInterop": true,
     "moduleResolution": "node",
     "resolveJsonModule": true,
-    "target": "ES2020",
+    "target": "ES2022",
     "module": "CommonJS",
     "strictNullChecks": true,
     "skipLibCheck": true,
     "declaration": true,
     "types": ["@jxa/types", "@jxa/global-type", "node", "fs-extra"]
-  },
-  "ts-node": {
-    "swc": true
   }
 }
