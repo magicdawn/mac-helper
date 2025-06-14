@@ -1,5 +1,5 @@
 import { run } from '@jxa/run'
-import { type GoogleChrome } from 'jxa-common-used'
+import type { GoogleChrome } from 'jxa-common-used'
 
 export type ActiveTab = { url: string; title: string }
 
@@ -14,8 +14,8 @@ export async function getChromeActiveTab(): Promise<ActiveTab> {
     const app = Application<GoogleChrome>('Google Chrome')
     app.includeStandardAdditions = true
 
-    const wins = (app.windows() || []).filter((w) => !w.minimized())
-    const tab = wins[0]?.activeTab()
+    const win = (app.windows() || []).find((w) => !w.minimized())
+    const tab = win?.activeTab()
     return {
       url: tab?.url(),
       title: tab?.title(),

@@ -2,16 +2,16 @@
   "include": ["src"],
   "compilerOptions": {
     "rootDir": "src",
-    "outDir": "lib",
-    "allowSyntheticDefaultImports": true,
-    "esModuleInterop": true,
-    "moduleResolution": "node",
-    "resolveJsonModule": true,
     "target": "ES2022",
     "module": "CommonJS",
-    "strictNullChecks": true,
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
     "skipLibCheck": true,
+    "types": ["@jxa/types", "@jxa/global-type", "node", "fs-extra"],
+    "resolveJsonModule": true,
+    "strictNullChecks": true,
     "declaration": true,
-    "types": ["@jxa/types", "@jxa/global-type", "node", "fs-extra"]
+    "outDir": "lib"
   }
 }

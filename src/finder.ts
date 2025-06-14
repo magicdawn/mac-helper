@@ -1,47 +1,47 @@
+import { fileURLToPath } from 'node:url'
 import { run as jxaRun } from '@jxa/run'
-import { type PathFinder as PathFinderType } from 'jxa-common-used'
-import { fileURLToPath } from 'url'
 import { isAppRunning } from './app'
+import type { PathFinder as PathFinderType } from 'jxa-common-used'
 
 /**
  * `App` named epxorts
  */
 export const PathFinder = {
-  async allSelected() {
-    return getPathFinderSelected()
+  allSelected() {
+    return PathFinder_allSelected()
   },
-  async singleSelected(): Promise<string | undefined> {
-    return (await getPathFinderSelected())[0]
+  singleSelected() {
+    return PathFinder_singleSelected()
   },
-  async setSelected(filePaths: string[]) {
-    await setPathFinderSelected(filePaths)
+  setSelected(filePaths: string[]) {
+    return PathFinder_setSelected(filePaths)
   },
 }
 export const Finder = {
-  async allSelected() {
-    return getFinderSelected()
+  allSelected() {
+    return Finder_allSelected()
   },
   async singleSelected(): Promise<string | undefined> {
-    return (await getFinderSelected())[0]
+    return (await Finder_allSelected())[0]
   },
-  async setSelected(filePaths: string[]) {
-    await setFinderSelected(filePaths)
+  setSelected(filePaths: string[]) {
+    return Finder_setSelected(filePaths)
   },
 }
 export const QSpace = {
-  async allSelected() {
-    return getQSpaceSelected()
+  allSelected() {
+    return QSpace_allSelected()
   },
   async singleSelected(): Promise<string | undefined> {
-    return (await getQSpaceSelected())[0]
+    return (await QSpace_allSelected())[0]
   },
 }
 
 /**
  * impls
  */
-
-export async function getPathFinderSelected() {
+/* #region PathFinder */
+async function PathFinder_allSelected() {
   if (!(await isAppRunning('Path Finder'))) {
     return []
   }
@@ -52,14 +52,28 @@ export async function getPathFinderSelected() {
   return filePaths
 }
 
-export async function setPathFinderSelected(filePaths: string[]) {
+async function PathFinder_singleSelected(): Promise<string | undefined> {
+  if (!(await isAppRunning('Path Finder'))) {
+    return
+  }
+  const firstFilePath: string | undefined = await jxaRun(() => {
+    const app = Application<PathFinderType>('Path Finder')
+    const arr = (app.selection() || []).map((x) => x.posixPath())
+    return arr[0]
+  })
+  return firstFilePath
+}
+
+async function PathFinder_setSelected(filePaths: string[]) {
   await jxaRun((filePaths: string[]) => {
     const app = Application<PathFinderType>('Path Finder')
     app.select(filePaths)
   }, filePaths)
 }
+/* #endregion */
 
-export async function getFinderSelected() {
+/* #region Finder */
+async function Finder_allSelected() {
   const urls: string[] = await jxaRun(() => {
     const app = Application('Finder')
     const selection = app.selection()
@@ -67,16 +81,17 @@ export async function getFinderSelected() {
   })
   return urls.map((u) => fileURLToPath(u))
 }
-
-export async function setFinderSelected(filePaths: string[]) {
+async function Finder_setSelected(filePaths: string[]) {
   await jxaRun((filePaths: string[]) => {
     const app = Application('Finder')
     app.select(filePaths.map((f) => Path(f)))
     app.activate()
   }, filePaths)
 }
+/* #endregion */
 
-// file item n [inh. item] : A file item.
+/* #region QSpace */
+// file item n [inh. item] : A file item.
 // properties
 //  - id (text, r/o) : The unique identifier of the item.
 //  - name (text, r/o) : The name of the file.
@@ -90,7 +105,7 @@ export type QSpaceFileItem = {
   urlstr: () => string
 }
 
-export async function getQSpaceSelected() {
+async function QSpace_allSelected() {
   if (!(await isAppRunning('QSpace Pro'))) {
     return []
   }
@@ -101,6 +116,7 @@ export async function getQSpaceSelected() {
   })
   return urls.map((u) => fileURLToPath(u))
 }
+/* #endregion */
 
 // ;(async () => {
 //   console.log(await getQSpaceSelected())

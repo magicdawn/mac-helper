@@ -1,5 +1,5 @@
 import { run } from '@jxa/run'
-import { iTerm2 } from 'jxa-common-used'
+import type { iTerm2 } from 'jxa-common-used'
 
 export async function runInIterm(command: string, reuse = true) {
   await run(

@@ -1,11 +1,11 @@
-import { exec } from 'child_process'
+import { exec } from 'node:child_process'
 
 /**
  * file path based process running detect.
  * for vscode, process name = `Code`, file is `Visual Studio Code.app`, the `Visual Studio Code` should be passed
  */
 
-export async function isAppRunning(appName: string): Promise<boolean> {
+export function isAppRunning(appName: string): Promise<boolean> {
   return new Promise((resolve, reject) => {
     exec(`ps -ax -o command`, (err, stdout, stderr) => {
       if (err) return reject(err)
