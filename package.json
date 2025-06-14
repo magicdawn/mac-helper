@@ -47,7 +47,6 @@
     "@magicdawn/eslint-config": "^1.5.4",
     "@magicdawn/prettier-config": "^0.1.0",
     "@types/fs-extra": "^11.0.4",
-    "@types/mocha": "^10.0.10",
     "@types/node": "^24.0.1",
     "@vitest/coverage-v8": "^3.2.3",
     "delay": "^6.0.0",

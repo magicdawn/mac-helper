@@ -1,3 +1,4 @@
+import { describe, it } from 'vitest'
 import { iTerm } from '../src'
 
 describe('iTerm', () => {

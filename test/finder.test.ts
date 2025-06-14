@@ -3,26 +3,23 @@
 
 /* eslint-disable require-await */
 
-import path from 'node:path'
 import { run } from '@jxa/run'
 import delay from 'delay'
-import should from 'should'
-import { Finder, PathFinder } from '../src/finder'
 import type { PathFinder as PathFinderType } from 'jxa-common-used'
+import path from 'node:path'
+import should from 'should'
+import { describe, it } from 'vitest'
+import { Finder, PathFinder } from '../src/finder'
 
-describe('PathFinder', async () => {
+describe.sequential('PathFinder', () => {
   it('PathFinder works', async () => {
-    await run((__filename) => {
-      const app = Application<PathFinderType>('Path Finder')
-      app.select(__filename)
-    }, __filename)
+    await PathFinder.setSelected([__filename])
     await delay(200)
 
     const selected = await PathFinder.singleSelected()
     should.ok(selected)
     selected!.should.equal(__filename)
   })
-
   it('PathFinder multiple works', async () => {
     await delay(200)
     const dir = `${path.join(__dirname, '..')}/`
@@ -38,7 +35,7 @@ describe('PathFinder', async () => {
 
 // Finder 作妖, 必须切换到 finder, 下面获取的路径才对
 // 需要测试再打开
-describe('Finder', async () => {
+describe.sequential('Finder', async () => {
   it('Finder works', async () => {
     {
       await Finder.setSelected([__filename])
