@@ -1,5 +1,9 @@
+import { availableParallelism } from 'node:os'
+import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { run as jxaRun } from '@jxa/run'
+import { uniq } from 'es-toolkit'
+import pmap from 'promise.map'
 import { isAppRunning } from './app'
 import type { PathFinder as PathFinderType } from 'jxa-common-used'
 
@@ -115,6 +119,35 @@ async function QSpace_allSelected() {
     return selection
   })
   return urls.map((u) => fileURLToPath(u))
+}
+/* #endregion */
+
+/* #region Top Level Helper */
+export function isRepresentPF(file: string) {
+  return /^\$?pf$/i.test(file)
+}
+
+export function isRepresentQS(file: string) {
+  return /^\$?qs$/i.test(file)
+}
+
+/**
+ * 处理 $PF $QS, ignore case
+ */
+export async function normalizeInputFileList(fileList: string[]) {
+  return uniq(
+    (
+      await pmap(
+        fileList,
+        async (f) => {
+          if (isRepresentPF(f)) return await PathFinder.allSelected()
+          if (isRepresentQS(f)) return await QSpace.allSelected()
+          return path.resolve(f)
+        },
+        availableParallelism(),
+      )
+    ).flat(),
+  )
 }
 /* #endregion */
 
