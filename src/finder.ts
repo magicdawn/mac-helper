@@ -140,8 +140,10 @@ export async function normalizeInputFileList(fileList: string[]) {
       await pmap(
         fileList,
         async (f) => {
-          if (isRepresentPF(f)) return await PathFinder.allSelected()
-          if (isRepresentQS(f)) return await QSpace.allSelected()
+          if (process.platform === 'darwin') {
+            if (isRepresentPF(f)) return await PathFinder.allSelected()
+            if (isRepresentQS(f)) return await QSpace.allSelected()
+          }
           return path.resolve(f)
         },
         availableParallelism(),
