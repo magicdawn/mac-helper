@@ -3,9 +3,7 @@
 
 /* eslint-disable require-await */
 
-import { run } from '@jxa/run'
 import delay from 'delay'
-import type { PathFinder as PathFinderType } from 'jxa-common-used'
 import path from 'node:path'
 import should from 'should'
 import { describe, it } from 'vitest'
