@@ -1,11 +1,11 @@
+import { run as jxaRun } from '@jxa/run'
+import { uniq } from 'es-toolkit'
+import type { PathFinder as PathFinderType } from 'jxa-common-used'
 import { availableParallelism } from 'node:os'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { run as jxaRun } from '@jxa/run'
-import { uniq } from 'es-toolkit'
 import pmap from 'promise.map'
 import { isAppRunning } from './app'
-import type { PathFinder as PathFinderType } from 'jxa-common-used'
 
 /**
  * `App` named epxorts
@@ -124,15 +124,15 @@ async function QSpace_allSelected() {
 
 /* #region Top Level Helper */
 export function isRepresentPF(file: string) {
-  return /^\$?pf$/i.test(file)
+  return /^[@$]?pf$/i.test(file)
 }
 
 export function isRepresentQS(file: string) {
-  return /^\$?qs$/i.test(file)
+  return /^[@$]?qs$/i.test(file)
 }
 
 /**
- * 处理 $PF $QS, ignore case
+ * 处理 `@pf` `@qs`, ignore case
  */
 export async function normalizeInputFileList(fileList: string[]) {
   return uniq(
@@ -154,5 +154,5 @@ export async function normalizeInputFileList(fileList: string[]) {
 /* #endregion */
 
 // ;(async () => {
-//   console.log(await getQSpaceSelected())
+//   console.log(await normalizeInputFileList(['@pf']))
 // })()
