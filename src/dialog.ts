@@ -59,7 +59,7 @@ async function chooseFromList(
   })
 
   if (!selected) return
-  const label = selected[0]
+  const label = (selected as any)[0]
 
   if (!usingOption) {
     return label
@@ -129,3 +129,5 @@ async function chooseMultipleFromList(
 //   .then((selected) => {
 //     console.log(selected)
 //   })
+
+dialog.prompt('hello', 'world').then(console.log)
