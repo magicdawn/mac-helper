@@ -129,5 +129,4 @@ async function chooseMultipleFromList(
 //   .then((selected) => {
 //     console.log(selected)
 //   })
-
-dialog.prompt('hello', 'world').then(console.log)
+// dialog.prompt('hello', 'world').then(console.log)

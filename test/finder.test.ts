@@ -1,10 +1,12 @@
 /// <reference types='@jxa/global-type' />
 /// <reference types='@jxa/types' />
+/// <reference types='node' />
+
+// tsconfig only for src/
 
 /* eslint-disable require-await */
-
-import delay from 'delay'
 import path from 'node:path'
+import delay from 'delay'
 import should from 'should'
 import { describe, it } from 'vitest'
 import { Finder, PathFinder } from '../src/finder'

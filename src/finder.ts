@@ -63,7 +63,7 @@ async function PathFinder_singleSelected(): Promise<string | undefined> {
   }
   const firstFilePath: string | undefined = await jxaRun(() => {
     const app = Application<PathFinderType>('Path Finder')
-    return app.selection[0]?.posixPath()
+    return (app.selection() || [])[0]?.posixPath()
   })
   return firstFilePath
 }
