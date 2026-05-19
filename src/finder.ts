@@ -1,11 +1,11 @@
-import { run as jxaRun } from '@jxa/run'
-import { uniq } from 'es-toolkit'
-import type { PathFinder as PathFinderType } from 'jxa-common-used'
 import { availableParallelism } from 'node:os'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { run as jxaRun } from '@jxa/run'
+import { uniq } from 'es-toolkit'
 import pmap from 'promise.map'
 import { isAppRunning } from './app'
+import type { PathFinder as PathFinderType } from 'jxa-common-used'
 
 /**
  * `App` named epxorts
@@ -20,6 +20,7 @@ export const PathFinder = {
   setSelected(filePaths: string[]) {
     return PathFinder_setSelected(filePaths)
   },
+  getActiveTabDir: PathFinder_getActiveTabDir,
 }
 export const Finder = {
   allSelected() {
@@ -62,8 +63,7 @@ async function PathFinder_singleSelected(): Promise<string | undefined> {
   }
   const firstFilePath: string | undefined = await jxaRun(() => {
     const app = Application<PathFinderType>('Path Finder')
-    const arr = (app.selection() || []).map((x) => x.posixPath())
-    return arr[0]
+    return app.selection[0]?.posixPath()
   })
   return firstFilePath
 }
@@ -73,6 +73,30 @@ async function PathFinder_setSelected(filePaths: string[]) {
     const app = Application<PathFinderType>('Path Finder')
     app.select(filePaths)
   }, filePaths)
+}
+
+/**
+ * 获取 activeTab dir, 当没有 selection 时可用,
+ * 要求只能有一个 visible window, 从 jxa 这一层无法区分 window z-index
+ */
+async function PathFinder_getActiveTabDir(): Promise<string | undefined> {
+  if (!(await isAppRunning('Path Finder'))) return
+
+  const visibleWindowCount: number = await jxaRun(() => {
+    const app = Application<PathFinderType>('Path Finder')
+    return app.finderWindows.whose({ visible: true }).length
+  })
+  if (!visibleWindowCount) return
+  if (visibleWindowCount > 1) {
+    throw new Error('Multiple visible PathFinder window not supported in PathFinder_getActiveTabDir')
+  }
+
+  const dir: string = await jxaRun(() => {
+    const app = Application<PathFinderType>('Path Finder')
+    const w = app.finderWindows.whose({ visible: true })[0]
+    return w.target.posixPath()
+  })
+  return dir
 }
 /* #endregion */
 
@@ -153,6 +177,7 @@ export async function normalizeInputFileList(fileList: string[]) {
 }
 /* #endregion */
 
-// ;(async () => {
-//   console.log(await normalizeInputFileList(['@pf']))
-// })()
+;(async () => {
+  console.log(await normalizeInputFileList(['@pf']))
+  console.log(await PathFinder.getActiveTabDir())
+})()
