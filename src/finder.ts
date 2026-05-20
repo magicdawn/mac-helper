@@ -176,8 +176,3 @@ export async function normalizeInputFileList(fileList: string[]) {
   )
 }
 /* #endregion */
-
-;(async () => {
-  console.log(await normalizeInputFileList(['@pf']))
-  console.log(await PathFinder.getActiveTabDir())
-})()
