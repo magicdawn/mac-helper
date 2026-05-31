@@ -1,5 +1,5 @@
 import { run } from '@jxa/run'
-import { isAppRunning } from './app'
+import { isAppRunning } from './app.js'
 import type { GoogleChrome } from 'jxa-common-used'
 
 export type ActiveTab = { url: string; title: string }

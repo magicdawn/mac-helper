@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url'
 import { run as jxaRun } from '@jxa/run'
 import { uniq } from 'es-toolkit'
 import pmap from 'promise.map'
-import { isAppRunning } from './app'
+import { isAppRunning } from './app.js'
 import type { PathFinder as PathFinderType } from 'jxa-common-used'
 
 /**
