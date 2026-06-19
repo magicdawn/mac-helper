@@ -150,10 +150,11 @@ async function QSpace_allSelected() {
 export function isRepresentPF(file: string) {
   return /^[@$]?pf$/i.test(file)
 }
-
 export function isRepresentQS(file: string) {
   return /^[@$]?qs$/i.test(file)
 }
+export const isRepresentPFDescription = '@pf or $pf or pf, ignore case'
+export const isRepresentQSDescription = '@qs or $qs or qs, ignore case'
 
 /**
  * 处理 `@pf` `@qs`, ignore case
