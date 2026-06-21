@@ -1,9 +1,11 @@
 import { availableParallelism } from 'node:os'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { run as jxaRun } from '@jxa/run'
+import dedent from 'dedent'
 import { uniq } from 'es-toolkit'
 import pmap from 'promise.map'
+import { runAppleScript } from 'run-applescript'
+import { runJxa } from 'run-jxa'
 import { isAppRunning } from './app.js'
 import type { PathFinder as PathFinderType } from 'jxa-common-used'
 
@@ -11,34 +13,23 @@ import type { PathFinder as PathFinderType } from 'jxa-common-used'
  * `App` named epxorts
  */
 export const PathFinder = {
-  allSelected() {
-    return PathFinder_allSelected()
-  },
-  singleSelected() {
-    return PathFinder_singleSelected()
-  },
-  setSelected(filePaths: string[]) {
-    return PathFinder_setSelected(filePaths)
-  },
+  allSelected: PathFinder_allSelected,
+  singleSelected: PathFinder_singleSelected,
+  setSelected: PathFinder_setSelected,
   getActiveTabDir: PathFinder_getActiveTabDir,
 }
 export const Finder = {
-  allSelected() {
-    return Finder_allSelected()
+  allSelected: Finder_allSelected,
+  async singleSelected(signal?: AbortSignal): Promise<string | undefined> {
+    return (await Finder_allSelected(signal))[0]
   },
-  async singleSelected(): Promise<string | undefined> {
-    return (await Finder_allSelected())[0]
-  },
-  setSelected(filePaths: string[]) {
-    return Finder_setSelected(filePaths)
-  },
+  setSelected: Finder_setSelected,
+  showInfoWindow: Finder_showInfoWindow,
 }
 export const QSpace = {
-  allSelected() {
-    return QSpace_allSelected()
-  },
-  async singleSelected(): Promise<string | undefined> {
-    return (await QSpace_allSelected())[0]
+  allSelected: QSpace_allSelected,
+  async singleSelected(signal?: AbortSignal): Promise<string | undefined> {
+    return (await QSpace_allSelected(signal))[0]
   },
 }
 
@@ -46,75 +37,118 @@ export const QSpace = {
  * impls
  */
 /* #region PathFinder */
-async function PathFinder_allSelected() {
+async function PathFinder_allSelected(signal?: AbortSignal) {
   if (!(await isAppRunning('Path Finder'))) {
     return []
   }
-  const filePaths: string[] = await jxaRun(() => {
-    const app = Application<PathFinderType>('Path Finder')
-    return (app.selection() || []).map((x) => x.posixPath())
-  })
+  const filePaths: string[] = await runJxa(
+    () => {
+      const app = Application<PathFinderType>('Path Finder')
+      return (app.selection() || []).map((x) => x.posixPath())
+    },
+    undefined,
+    { signal },
+  )
   return filePaths
 }
 
-async function PathFinder_singleSelected(): Promise<string | undefined> {
+async function PathFinder_singleSelected(signal?: AbortSignal): Promise<string | undefined> {
   if (!(await isAppRunning('Path Finder'))) {
     return
   }
-  const firstFilePath: string | undefined = await jxaRun(() => {
-    const app = Application<PathFinderType>('Path Finder')
-    return (app.selection() || [])[0]?.posixPath()
-  })
+  const firstFilePath: string | undefined = await runJxa(
+    () => {
+      const app = Application<PathFinderType>('Path Finder')
+      return (app.selection() || [])[0]?.posixPath()
+    },
+    undefined,
+    { signal },
+  )
   return firstFilePath
 }
 
-async function PathFinder_setSelected(filePaths: string[]) {
-  await jxaRun((filePaths: string[]) => {
-    const app = Application<PathFinderType>('Path Finder')
-    app.select(filePaths)
-  }, filePaths)
+async function PathFinder_setSelected(filePaths: string[], signal?: AbortSignal) {
+  await runJxa(
+    (filePaths) => {
+      const app = Application<PathFinderType>('Path Finder')
+      app.select(filePaths)
+      return null
+    },
+    [filePaths],
+    { signal },
+  )
 }
 
 /**
  * 获取 activeTab dir, 当没有 selection 时可用,
  * 要求只能有一个 visible window, 从 jxa 这一层无法区分 window z-index
  */
-async function PathFinder_getActiveTabDir(): Promise<string | undefined> {
+async function PathFinder_getActiveTabDir(signal?: AbortSignal): Promise<string | undefined> {
   if (!(await isAppRunning('Path Finder'))) return
 
-  const visibleWindowCount: number = await jxaRun(() => {
-    const app = Application<PathFinderType>('Path Finder')
-    return app.finderWindows.whose({ visible: true }).length
-  })
+  const visibleWindowCount: number = await runJxa(
+    () => {
+      const app = Application<PathFinderType>('Path Finder')
+      return app.finderWindows.whose({ visible: true }).length
+    },
+    undefined,
+    { signal },
+  )
   if (!visibleWindowCount) return
   if (visibleWindowCount > 1) {
     throw new Error('Multiple visible PathFinder window not supported in PathFinder_getActiveTabDir')
   }
 
-  const dir: string = await jxaRun(() => {
-    const app = Application<PathFinderType>('Path Finder')
-    const w = app.finderWindows.whose({ visible: true })[0]
-    return w.target.posixPath()
-  })
+  const dir: string = await runJxa(
+    () => {
+      const app = Application<PathFinderType>('Path Finder')
+      const w = app.finderWindows.whose({ visible: true })[0]
+      return w.target.posixPath()
+    },
+    undefined,
+    { signal },
+  )
   return dir
 }
 /* #endregion */
 
 /* #region Finder */
-async function Finder_allSelected() {
-  const urls: string[] = await jxaRun(() => {
-    const app = Application('Finder')
-    const selection = app.selection()
-    return (selection || []).map((x) => x.url())
-  })
+async function Finder_allSelected(signal?: AbortSignal) {
+  const urls: string[] = await runJxa(
+    () => {
+      const app = Application('Finder')
+      const selection = app.selection()
+      return (selection || []).map((x) => x.url())
+    },
+    undefined,
+    { signal },
+  )
   return urls.map((u) => fileURLToPath(u))
 }
-async function Finder_setSelected(filePaths: string[]) {
-  await jxaRun((filePaths: string[]) => {
-    const app = Application('Finder')
-    app.select(filePaths.map((f) => Path(f)))
-    app.activate()
-  }, filePaths)
+async function Finder_setSelected(filePaths: string[], signal?: AbortSignal) {
+  await runJxa(
+    (filePaths) => {
+      const app = Application('Finder')
+      app.select(filePaths.map((f) => Path(f)))
+      app.activate()
+      return null
+    },
+    [filePaths],
+    { signal },
+  )
+}
+async function Finder_showInfoWindow(filePaths: string | string[], signal?: AbortSignal) {
+  const inputPaths = [filePaths].flat().map((x) => path.resolve(x))
+
+  // https://apple.stackexchange.com/questions/409243/use-the-finder-to-act-on-a-path-via-jxa
+  // no easy way to write this in JXA
+  const applescriptContent = dedent`
+    tell application "Finder"
+      ${inputPaths.map((p) => `open information window of (POSIX file "${p}" as alias)`).join('\n')}
+    end tell
+  `
+
+  await runAppleScript(applescriptContent, { signal })
 }
 /* #endregion */
 
@@ -133,15 +167,19 @@ export type QSpaceFileItem = {
   urlstr: () => string
 }
 
-async function QSpace_allSelected() {
+async function QSpace_allSelected(signal?: AbortSignal) {
   if (!(await isAppRunning('QSpace Pro'))) {
     return []
   }
-  const urls: string[] = await jxaRun(() => {
-    const app = Application('QSpace Pro')
-    const selection = (app.selectedItems() || []).map((x: QSpaceFileItem) => x.urlstr())
-    return selection
-  })
+  const urls: string[] = await runJxa(
+    () => {
+      const app = Application('QSpace Pro')
+      const selection = (app.selectedItems() || []).map((x: QSpaceFileItem) => x.urlstr())
+      return selection
+    },
+    undefined,
+    { signal },
+  )
   return urls.map((u) => fileURLToPath(u))
 }
 /* #endregion */

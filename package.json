@@ -43,8 +43,11 @@
   },
   "dependencies": {
     "@jxa/run": "^1.4.0",
+    "dedent": "^1.7.2",
     "es-toolkit": "^1.47.0",
-    "promise.map": "^1.2.0"
+    "promise.map": "^1.2.0",
+    "run-applescript": "^7.1.0",
+    "run-jxa": "^4.0.0"
   },
   "devDependencies": {
     "@jxa/global-type": "^1.4.0",
