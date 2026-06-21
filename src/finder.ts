@@ -139,15 +139,16 @@ async function Finder_setSelected(filePaths: string[], signal?: AbortSignal) {
 }
 async function Finder_showInfoWindow(filePaths: string | string[], signal?: AbortSignal) {
   const inputPaths = [filePaths].flat().map((x) => path.resolve(x))
+  if (!inputPaths.length) return
 
   // https://apple.stackexchange.com/questions/409243/use-the-finder-to-act-on-a-path-via-jxa
   // no easy way to write this in JXA
   const applescriptContent = dedent`
     tell application "Finder"
       ${inputPaths.map((p) => `open information window of (POSIX file "${p}" as alias)`).join('\n')}
+      activate
     end tell
   `
-
   await runAppleScript(applescriptContent, { signal })
 }
 /* #endregion */
