@@ -1,4 +1,4 @@
-import { run } from '@jxa/run'
+import { runJxa } from 'run-jxa'
 import type { StandardAdditions } from '@jxa/types'
 
 export const dialog = {
@@ -7,16 +7,20 @@ export const dialog = {
   chooseMultipleFromList,
 }
 
-async function prompt(label: string, defaultValue = ''): Promise<string> {
+async function prompt(label: string, defaultValue = '', signal?: AbortSignal): Promise<string> {
   // if cancel dialog, will throw error
   try {
     return (
-      (await run((label) => {
-        const app = Application.currentApplication()
-        app.includeStandardAdditions = true
-        const response = app.displayDialog(label, { defaultAnswer: '' })
-        return response.textReturned
-      }, label)) || defaultValue
+      (await runJxa(
+        (label) => {
+          const app = Application.currentApplication()
+          app.includeStandardAdditions = true
+          const response = app.displayDialog(label, { defaultAnswer: '' })
+          return response.textReturned
+        },
+        [label],
+        { signal },
+      )) || defaultValue
     )
   } catch {
     return defaultValue
@@ -25,16 +29,16 @@ async function prompt(label: string, defaultValue = ''): Promise<string> {
 
 type AppMethod = 'chooseFromList'
 
-async function runOnCurrentApp(method: AppMethod, ...args: any[]) {
-  return await run(
+async function runOnCurrentApp(method: AppMethod, args: any[] | undefined, signal?: AbortSignal) {
+  return await runJxa(
     (method: AppMethod, ...args: any[]) => {
       const app = Application.currentApplication()
       app.includeStandardAdditions = true
       // @ts-ignore
       return app[method]?.(...args)
     },
-    method,
-    ...args,
+    [method, ...(args || [])],
+    { signal },
   )
 }
 
@@ -43,6 +47,7 @@ type ChooseOption = { label: string; value: string }
 async function chooseFromList(
   list: string[] | ChooseOption[],
   options: StandardAdditions.StandardAdditions.ChooseFromListOptionalParameter = {},
+  signal?: AbortSignal,
 ): Promise<string | undefined> {
   let usingOption = false
   let showList: string[] = []
@@ -53,10 +58,11 @@ async function chooseFromList(
     showList = list as string[]
   }
 
-  const selected = await runOnCurrentApp('chooseFromList', showList, {
-    multipleSelectionsAllowed: false,
-    ...options,
-  })
+  const selected = await runOnCurrentApp(
+    'chooseFromList',
+    [showList, { multipleSelectionsAllowed: false, ...options }],
+    signal,
+  )
 
   if (!selected) return
   const label = (selected as any)[0]
@@ -72,6 +78,7 @@ async function chooseFromList(
 async function chooseMultipleFromList(
   list: string[] | ChooseOption[],
   options: StandardAdditions.StandardAdditions.ChooseFromListOptionalParameter = {},
+  signal?: AbortSignal,
 ): Promise<string[]> {
   let usingOption = false
   let showList: string[] = []
@@ -82,10 +89,11 @@ async function chooseMultipleFromList(
     showList = list as string[]
   }
 
-  const selected = await runOnCurrentApp('chooseFromList', showList, {
-    multipleSelectionsAllowed: true,
-    ...options,
-  })
+  const selected = await runOnCurrentApp(
+    'chooseFromList',
+    [showList, { multipleSelectionsAllowed: true, ...options }],
+    signal,
+  )
 
   if (!selected) return []
 

@@ -2,7 +2,7 @@
   "name": "mac-helper",
   "type": "module",
   "version": "0.9.0",
-  "packageManager": "pnpm@11.5.0+sha512.dbfcc4f81cf48597afd4bc391ffdf12c11f1a9fb83a395bfa6b0a2d9cc2fd8ffebafdb1ccbd529632153f793904c2615b7f09fe1a345473fd1c35845172a8eb1",
+  "packageManager": "pnpm@11.8.0+sha512.c1f5e7c4cb241c8f174b743851d82f42b802324afc8b0f116b96adb15aa06664948dde36960a3ba1079ba5b4b29dd0140135b94b5b5f5263592249d68e555f26",
   "description": "useful helper for macOS",
   "author": "magicdawn",
   "license": "MIT",
@@ -42,9 +42,8 @@
     "prepublishOnly": "pnpm test && pnpm build"
   },
   "dependencies": {
-    "@jxa/run": "^1.4.0",
     "dedent": "^1.7.2",
-    "es-toolkit": "^1.47.0",
+    "es-toolkit": "^1.47.1",
     "promise.map": "^1.2.0",
     "run-applescript": "^7.1.0",
     "run-jxa": "^4.0.0"
@@ -53,27 +52,31 @@
     "@jxa/global-type": "^1.4.0",
     "@jxa/sdef-to-dts": "^1.4.0",
     "@jxa/types": "^1.4.0",
-    "@magicdawn/eslint-config": "github:magicdawn/eslint-config#dist",
+    "@magicdawn/eslint-config": "^1.6.8",
     "@magicdawn/prettier-config": "^0.1.0",
     "@types/fs-extra": "^11.0.4",
-    "@types/node": "^25.9.1",
-    "@typescript/native-preview": "7.0.0-dev.20260527.2",
-    "@vitest/coverage-v8": "^4.1.7",
+    "@types/node": "^25.9.4",
+    "@typescript/native-preview": "7.0.0-dev.20260620.1",
+    "@vitest/coverage-v8": "^4.1.9",
     "delay": "^7.0.0",
-    "eslint": "^10.4.1",
+    "eslint": "^10.5.0",
     "eslint-config-prettier": "^10.1.8",
     "fs-extra": "^11.3.5",
     "husky": "^9.1.7",
     "jxa-common-used": "^0.0.3",
-    "lint-staged": "^17.0.5",
-    "prettier": "^3.8.3",
+    "lint-staged": "^17.0.7",
+    "prettier": "^3.8.4",
     "should": "^13.2.3",
     "typescript": "^6.0.3",
-    "vitest": "^4.1.7"
+    "vitest": "^4.1.9"
   },
   "lint-staged": {
-    "*.{js,jsx,ts,tsx,less,md}": [
-      "prettier --write"
+    "*.{?(c|m)(j|t)s?(x),json,y?(a)ml}": [
+      "eslint --fix --no-warn-ignored",
+      "prettier --write --ignore-unknown"
+    ],
+    "!*.{?(c|m)(j|t)s?(x),json,y?(a)ml}": [
+      "prettier --write --ignore-unknown"
     ]
   }
 }

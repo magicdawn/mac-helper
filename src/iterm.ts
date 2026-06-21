@@ -1,9 +1,9 @@
-import { run } from '@jxa/run'
+import { runJxa } from 'run-jxa'
 import type { iTerm2 } from 'jxa-common-used'
 
 export async function runInIterm(command: string, reuse = true) {
-  type RunResult = 'no-session' | undefined
-  const result: RunResult = await run(
+  type RunResult = 'no-session' | null
+  const result: RunResult = await runJxa(
     (command, reuse): RunResult => {
       const app = Application<iTerm2>('iTerm')
       app.includeStandardAdditions = true
@@ -28,11 +28,10 @@ export async function runInIterm(command: string, reuse = true) {
 
       if (!usingSession) return 'no-session'
       app.write(usingSession, { text: command })
+      return null
     },
-    command,
-    reuse,
+    [command, reuse],
   )
-
   if (result === 'no-session') {
     console.error('No iTerm session found')
   }
