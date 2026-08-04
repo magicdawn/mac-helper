@@ -17,13 +17,46 @@ async function isAppRunning(appName: string, signal?: AbortSignal): Promise<bool
   )
 }
 
-async function getRunningAppNames(signal?: AbortSignal): Promise<string[]> {
+export type AppInfo = {
+  name: string
+  bundleId: string
+  path?: string
+}
+
+export async function getRunningAppInfos(signal?: AbortSignal): Promise<AppInfo[]> {
   return await runJxa(
     () => {
-      const app = Application<SystemEvents.SystemEvents.Application>('System Events')
+      const app = Application('System Events')
       app.includeStandardAdditions = true
-      const runningAppNames: string[] = app.processes().map((p: SystemEvents.SystemEvents.Process) => p.name())
+      const runningAppNames: AppInfo[] = app.applicationProcesses().map((p) => {
+        return {
+          name: p.name(),
+          bundleId: p.bundleIdentifier(),
+          path: p.applicationFile()?.posixPath(),
+        }
+      })
       return runningAppNames
+    },
+    undefined,
+    { signal },
+  )
+}
+
+export async function getForegroundAppInfo(signal?: AbortSignal): Promise<{
+  foregroundAppName: string | undefined
+  foregroundAppBundleId: string | undefined
+  foregroundAppPath: string | undefined
+}> {
+  return await runJxa(
+    function () {
+      const app = Application('System Events')
+      app.includeStandardAdditions = true
+      const foregroundApp = app.applicationProcesses.whose({ frontmost: true })?.[0]
+      return {
+        foregroundAppName: foregroundApp?.name(),
+        foregroundAppBundleId: foregroundApp?.bundleIdentifier(),
+        foregroundAppPath: foregroundApp?.applicationFile()?.posixPath(),
+      }
     },
     undefined,
     { signal },

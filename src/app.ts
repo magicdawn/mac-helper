@@ -22,5 +22,3 @@ export function isAppRunning(appName: string): Promise<boolean> {
     })
   })
 }
-
-// isAppRunning('Visual Studio Code').then(console.log)
