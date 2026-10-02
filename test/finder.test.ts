@@ -11,7 +11,7 @@ import should from 'should'
 import { describe, it } from 'vitest'
 import { Finder, PathFinder } from '../src/finder'
 
-describe.sequential('PathFinder', () => {
+describe('PathFinder', { concurrent: false }, () => {
   it('PathFinder works', async () => {
     await PathFinder.setSelected([__filename])
     await delay(200)
@@ -35,7 +35,7 @@ describe.sequential('PathFinder', () => {
 
 // Finder 作妖, 必须切换到 finder, 下面获取的路径才对
 // 需要测试再打开
-describe.sequential('Finder', async () => {
+describe('Finder', { concurrent: false }, async () => {
   it('Finder works', async () => {
     {
       await Finder.setSelected([__filename])
