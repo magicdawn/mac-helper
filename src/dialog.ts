@@ -1,4 +1,5 @@
 import { runJxa } from 'run-jxa'
+import { runOnCurrentApp } from './utils.js'
 import type { StandardAdditions } from '@jxa/types'
 
 export const dialog = {
@@ -25,21 +26,6 @@ async function prompt(label: string, defaultValue = '', signal?: AbortSignal): P
   } catch {
     return defaultValue
   }
-}
-
-type AppMethod = 'chooseFromList'
-
-async function runOnCurrentApp(method: AppMethod, args: any[] | undefined, signal?: AbortSignal) {
-  return await runJxa(
-    (method: AppMethod, ...args: any[]) => {
-      const app = Application.currentApplication()
-      app.includeStandardAdditions = true
-      // @ts-ignore
-      return app[method]?.(...args)
-    },
-    [method, ...(args || [])],
-    { signal },
-  )
 }
 
 type ChooseOption = { label: string; value: string }
@@ -106,35 +92,3 @@ async function chooseMultipleFromList(
     return valArr
   }
 }
-
-// dialog.chooseFromList(['hello', 'world']).then((selected) => {
-//   console.log(selected)
-// })
-
-// dialog
-//   .chooseFromList([
-//     { value: 'yes', label: '是吧~~~' },
-//     { value: 'halo', label: 'Halo 啊洒洒' },
-//   ])
-//   .then((selected) => {
-//     console.log(selected)
-//   })
-
-// dialog
-//   .chooseMultipleFromList(
-//     [
-//       { value: 'yes', label: '是吧~~~' },
-//       { value: 'halo', label: 'Halo 啊洒洒' },
-//     ],
-//     {
-//       withTitle: 'title',
-//       withPrompt: 'prompt',
-//       cancelButtonName: '取消!',
-//       // @ts-ignore
-//       okButtonName: '酱紫吧~',
-//     }
-//   )
-//   .then((selected) => {
-//     console.log(selected)
-//   })
-// dialog.prompt('hello', 'world').then(console.log)
