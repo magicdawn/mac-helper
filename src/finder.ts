@@ -7,7 +7,6 @@ import pmap from 'promise.map'
 import { runAppleScript } from 'run-applescript'
 import { runJxa } from 'run-jxa'
 import { isAppRunning } from './app.js'
-import type { PathFinder as PathFinderType } from 'jxa-common-used'
 
 /**
  * `App` named epxorts
@@ -17,6 +16,7 @@ export const PathFinder = {
   singleSelected: PathFinder_singleSelected,
   setSelected: PathFinder_setSelected,
   getActiveTabDir: PathFinder_getActiveTabDir,
+  getActiveTabDirOfWindow: PathFinder_getActiveTabDirOfWindow,
 }
 export const Finder = {
   allSelected: Finder_allSelected,
@@ -43,7 +43,7 @@ async function PathFinder_allSelected(signal?: AbortSignal) {
   }
   const filePaths: string[] = await runJxa(
     () => {
-      const app = Application<PathFinderType>('Path Finder')
+      const app = Application('Path Finder')
       return (app.selection() || []).map((x) => x.posixPath())
     },
     undefined,
@@ -58,7 +58,7 @@ async function PathFinder_singleSelected(signal?: AbortSignal): Promise<string |
   }
   const firstFilePath: string | undefined = await runJxa(
     () => {
-      const app = Application<PathFinderType>('Path Finder')
+      const app = Application('Path Finder')
       return (app.selection() || [])[0]?.posixPath()
     },
     undefined,
@@ -70,7 +70,7 @@ async function PathFinder_singleSelected(signal?: AbortSignal): Promise<string |
 async function PathFinder_setSelected(filePaths: string[], signal?: AbortSignal) {
   await runJxa(
     (filePaths) => {
-      const app = Application<PathFinderType>('Path Finder')
+      const app = Application('Path Finder')
       app.select(filePaths)
       return null
     },
@@ -88,7 +88,7 @@ async function PathFinder_getActiveTabDir(signal?: AbortSignal): Promise<string 
 
   const visibleWindowCount: number = await runJxa(
     () => {
-      const app = Application<PathFinderType>('Path Finder')
+      const app = Application('Path Finder')
       return app.finderWindows.whose({ visible: true }).length
     },
     undefined,
@@ -101,11 +101,25 @@ async function PathFinder_getActiveTabDir(signal?: AbortSignal): Promise<string 
 
   const dir: string = await runJxa(
     () => {
-      const app = Application<PathFinderType>('Path Finder')
+      const app = Application('Path Finder')
       const w = app.finderWindows.whose({ visible: true })[0]
       return w.target.posixPath()
     },
     undefined,
+    { signal },
+  )
+  return dir
+}
+
+async function PathFinder_getActiveTabDirOfWindow(windowId: number, signal?: AbortSignal): Promise<string | undefined> {
+  if (!(await isAppRunning('Path Finder'))) return
+  const dir: string = await runJxa(
+    (windowId) => {
+      const app = Application('Path Finder')
+      const w = app.finderWindows.whose({ id: windowId })[0]
+      return w?.target.posixPath()
+    },
+    [windowId],
     { signal },
   )
   return dir
